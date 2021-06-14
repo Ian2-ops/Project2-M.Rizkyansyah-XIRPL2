@@ -4,7 +4,6 @@
  * and open the template in the editor.
  */
 package form;
-
 import classes.DatabaseConnection;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -12,13 +11,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
-
 /**
  *
  * @author Ian
  */
 public class DataSiswa extends javax.swing.JFrame {
-
     /**
      * Creates new form DataSiswa
      */
@@ -28,11 +25,11 @@ public class DataSiswa extends javax.swing.JFrame {
         koneksi = DatabaseConnection.getKoneksi("localhost","3306","root","","db_sekolah");
         showData();
     }
-
+    
     DefaultTableModel dtm;
     public void showData(){
         String[] kolom = {"NO","NIS","Nama","Kelas","Jurusan"};
-
+        
         dtm = new DefaultTableModel (null, kolom);
         try{
             Statement stmt = koneksi.createStatement();
@@ -45,7 +42,7 @@ public class DataSiswa extends javax.swing.JFrame {
                 String kelas = rs.getString("kelas");
                 String jurusan = rs.getString("jurusan");
                 String alamat = rs.getString("alamat");
-
+                
                 dtm.addRow(new String[] {no + "", nis, nama, kelas, jurusan, alamat});
                 no++;
             }
@@ -56,8 +53,7 @@ public class DataSiswa extends javax.swing.JFrame {
         }
         tbl_siswa.setModel(dtm);
     }
-
-
+            
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -66,7 +62,6 @@ public class DataSiswa extends javax.swing.JFrame {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
-
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tbl_siswa = new javax.swing.JTable();
@@ -74,12 +69,9 @@ public class DataSiswa extends javax.swing.JFrame {
         cmdTambah = new javax.swing.JButton();
         cmdEdit = new javax.swing.JButton();
         cmdHapus = new javax.swing.JButton();
-
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
         jLabel1.setText("Data Siswa");
-
         tbl_siswa.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null},
@@ -95,12 +87,32 @@ public class DataSiswa extends javax.swing.JFrame {
         jScrollPane1.setViewportView(tbl_siswa);
 
         cmdRefresh.setText("Refresh");
+        cmdRefresh.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmdRefreshActionPerformed(evt);
+            }
+        });
 
         cmdTambah.setText("Tambah");
+        cmdTambah.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmdTambahActionPerformed(evt);
+            }
+        });
 
         cmdEdit.setText("Ubah");
 
         cmdHapus.setText("Hapus");
+        cmdHapus.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                cmdHapusMouseClicked(evt);
+            }
+        });
+        cmdHapus.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmdHapusActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -138,9 +150,44 @@ public class DataSiswa extends javax.swing.JFrame {
                     .addComponent(cmdEdit)
                     .addComponent(cmdHapus)))
         );
-
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void cmdRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdRefreshActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cmdRefreshActionPerformed
+
+    private void cmdTambahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdTambahActionPerformed
+        // TODO add your handling code here:
+        ManageData tambahData = new ManageData(this, true);
+        tambahData.setVisible(true);
+    }//GEN-LAST:event_cmdTambahActionPerformed
+
+    int baris;
+    private void cmdHapusMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cmdHapusMouseClicked
+        // TODO add your handling code here:
+        baris = tbl_siswa.getSelectedRow();
+    }//GEN-LAST:event_cmdHapusMouseClicked
+
+    private void cmdHapusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdHapusActionPerformed
+        // TODO add your handling code here:
+        String idWhoWantToBeDelete = tbl_siswa.getValueAt(baris, 0).toString();
+
+        try{
+            Statement stmt = koneksi.createStatement();
+            String query   = "DELETE FROM t_siswa WHERE nis = '"+idWhoWantToBeDelete+";";
+            int berhasil = stmt.executeUpdate(query);
+            if(berhasil == 1){
+                JOptionPane.showMessageDialog(null, "Data Berhasil Dihapus");
+                dtm.getDataVector().removeAllElements();
+                showData();
+            }else{
+                JOptionPane.showMessageDialog(null, "Data Gagal Dihapus");
+            }
+        } catch(SQLException ex){
+            ex.printStackTrace();
+        }
+    }//GEN-LAST:event_cmdHapusActionPerformed
 
     /**
      * @param args the command line arguments
@@ -168,7 +215,6 @@ public class DataSiswa extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(DataSiswa.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -176,7 +222,6 @@ public class DataSiswa extends javax.swing.JFrame {
             }
         });
     }
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cmdEdit;
     private javax.swing.JButton cmdHapus;
