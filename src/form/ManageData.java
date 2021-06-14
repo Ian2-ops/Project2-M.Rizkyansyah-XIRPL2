@@ -7,34 +7,92 @@ package form;
 
 import classes.DatabaseConnection;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import javax.swing.JOptionPane;
-
 /**
  *
  * @author Ian
  */
 public class ManageData extends javax.swing.JFrame {
+public class ManageData extends javax.swing.JDialog {
+
     /**
      * Creates new form ManageData
      */
     Connection koneksi;
     public ManageData() {
+    String action;
+    public ManageData(java.awt.Frame parent, boolean modal, String act, String nis) {
+        super(parent, modal);
         initComponents();
         koneksi = DatabaseConnection.getKoneksi("localhost","3306","root","","db_sekolah");
+        koneksi = DatabaseConnection.getKoneksi("localhost", "3306", "root", "", "db_sekolah");
+
+        action = act;
+        if (action.equals("Edit")){
+	txtNIS.setEnabled(false);
+	showData(nis);
+}
     }
 
+
+    void showData(String nis){
+	try{
+		Statement stmt = koneksi.createStatement();
+		String query = "SELECT * FROM t_siswa WHERE nis = '"+nis+"'";
+		ResultSet rs = stmt.executeQuery(query);
+		rs.first();
+		txtNIS.setText(rs.getString("nis"));
+		txtNama.setText(rs.getString("nama"));
+		cmbKelas.setSelectedItem(rs.getString("kelas"));
+		cmbJurusan.setSelectedItem(rs.getString("jurusan"));
+
+	} catch (SQLException ex){
+		ex.printStackTrace();
+		JOptionPane.showMessageDialog(null, "Terjadi Kesalahan Query");
+	}
+}
+    public void EditData(){
+	String nis  = txtNIS.getText();
+	String nama  = txtNama.getText();
+	String kelas  =cmbKelas.getSelectedItem().toString();
+	String jurusan  = cmbJurusan.getSelectedItem().toString();
+
+	try{
+		Statement stmt = koneksi.createStatement();
+		String query = "UPDATE t_siswa SET nama = '"+nama+"',"
+		+ "kelas='"+kelas+"',"
+		+ "jurusan='"+jurusan+"' WHERE nis = '"+nis+"'";
+
+		System.out.println(query);
+		int berhasil = stmt.executeUpdate(query);
+		if (berhasil == 1){
+			JOptionPane.showMessageDialog(null, "Data Berhasil Diubah");
+		} else{
+			JOptionPane.showMessageDialog(null, "Data Berhasil Diubah");
+		}
+	} catch (SQLException ex){
+		ex.printStackTrace();
+		JOptionPane.showMessageDialog(null, "Terjadi Kesalahan pada Query");
+        }
+    }
     ManageData(DataSiswa aThis, boolean b) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
+    private ManageData() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 
     public void SimpanData(){
         String nis  = txtNIS.getText();
         String nama =txtNama.getText();
         String kelas = cmbKelas.getSelectedItem().toString();
         String jurusan = cmbJurusan.getSelectedItem().toString();
-
+        
         try{
             Statement stmt = koneksi.createStatement();
             String query = "INSERT INTO t_siswa(nis,nama,kelas,jurusan) "
@@ -46,13 +104,12 @@ public class ManageData extends javax.swing.JFrame {
             } else{
                 JOptionPane.showMessageDialog(null, "Data Gagal Dimasukan");
             }
-
+            
         }catch (SQLException ex){
             ex.printStackTrace();
             JOptionPane.showMessageDialog(null, "Terjadi Kesalahan pada Database");
         }
     }
-
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -61,7 +118,6 @@ public class ManageData extends javax.swing.JFrame {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
-
         lblTitle = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         txtNIS = new javax.swing.JTextField();
@@ -72,49 +128,36 @@ public class ManageData extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
         cmbKelas = new javax.swing.JComboBox<>();
         btnSimpan = new javax.swing.JButton();
-
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
         lblTitle.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         lblTitle.setText("Tambah Data");
         lblTitle.setToolTipText("");
-
         jLabel2.setText("NIS");
-
         txtNIS.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtNISActionPerformed(evt);
             }
         });
-
         jLabel3.setText("Nama Lengkap");
-
         txtNama.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtNamaActionPerformed(evt);
             }
         });
-
         jLabel4.setText("Kelas");
-
         cmbJurusan.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Rekayasa Perangkat Lunak", "MultiMedia", "Teknik Komputer Jaringan", "Audio Video", "Teknik Otomasi Industri" }));
-
         jLabel5.setText("Jurusan");
-
         cmbKelas.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "XI-RPL1", "XI-RPL2", "XI-RPL3", "XI-MM", "XI-TKJ" }));
-
         btnSimpan.setText("Simpan");
         btnSimpan.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnSimpanActionPerformed(evt);
             }
         });
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -140,7 +183,6 @@ public class ManageData extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(lblTitle)
@@ -164,14 +206,11 @@ public class ManageData extends javax.swing.JFrame {
                 .addComponent(btnSimpan)
                 .addContainerGap())
         );
-
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
     private void txtNISActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNISActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtNISActionPerformed
-
     private void txtNamaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNamaActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtNamaActionPerformed
@@ -179,6 +218,9 @@ public class ManageData extends javax.swing.JFrame {
     private void btnSimpanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSimpanActionPerformed
         // TODO add your handling code here:\
         SimpanData();
+        if(action.equals("Edit")) EditData();
+        else SimpanData();
+
     }//GEN-LAST:event_btnSimpanActionPerformed
 
     /**
@@ -207,12 +249,14 @@ public class ManageData extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(ManageData.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
+
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new ManageData().setVisible(true);
             }
         });
+
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
